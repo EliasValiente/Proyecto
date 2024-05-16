@@ -5,6 +5,7 @@ namespace App\Entity;
 use App\Repository\UserRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
@@ -34,14 +35,20 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(length: 50)]
     private ?string $nombre = null;
 
+    #[ORM\Column(length: 50)]
+    private ?string $userName = null;
+
     #[ORM\Column(length: 75)]
     private ?string $apellidos = null;
 
-    #[ORM\Column(length: 50)]
-    private ?string $ciudad = null;
+    #[ORM\Column(nullable: true)]
+    private ?string $cvv = null;
 
-    #[ORM\Column]
-    private ?int $cp = null;
+    #[ORM\Column(type: Types::BIGINT, nullable: true)]
+    private ?string $tarjeta = null;
+    
+    #[ORM\Column(type: Types::DATE_MUTABLE, nullable: true)]
+    private ?\DateTimeInterface $fechaValidez = null;
 
     #[ORM\OneToMany(mappedBy: 'user', targetEntity: ListaSeguimiento::class, orphanRemoval: true)]
     private Collection $listasseguimiento;
@@ -51,6 +58,8 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[ORM\OneToMany(mappedBy: 'user', targetEntity: Reproduccion::class)]
     private Collection $reproducciones;
+
+
 
     public function __construct()
     {
@@ -141,6 +150,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
+    public function getUserName(): ?string
+    {
+        return $this->userName;
+    }
+
+    public function setUserName(string $userName): static
+    {
+        $this->userName = $userName;
+
+        return $this;
+    }
+
     public function getApellidos(): ?string
     {
         return $this->apellidos;
@@ -153,26 +174,38 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    public function getCiudad(): ?string
+    public function getTarjeta(): ?string
     {
-        return $this->ciudad;
+        return $this->tarjeta;
     }
 
-    public function setCiudad(string $ciudad): static
+    public function setTarjeta(?string $tarjeta): static
     {
-        $this->ciudad = $ciudad;
+        $this->tarjeta = $tarjeta;
 
         return $this;
     }
 
-    public function getCp(): ?int
+    public function getCvv(): ?string
     {
-        return $this->cp;
+        return $this->cvv;
     }
 
-    public function setCp(int $cp): static
+    public function setCvv(?string $cvv): static
     {
-        $this->cp = $cp;
+        $this->cvv = $cvv;
+
+        return $this;
+    }
+
+    public function getFechaValidez(): ?\DateTimeInterface
+    {
+        return $this->fechaValidez;
+    }
+
+    public function setFechaValidez(?\DateTimeInterface $fechaValidez): static
+    {
+        $this->fechaValidez = $fechaValidez;
 
         return $this;
     }
@@ -227,7 +260,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this->reproducciones;
     }
 
-    public function addReproduccione(Reproduccion $reproduccione): static
+    public function addReproduccion(Reproduccion $reproduccione): static
     {
         if (!$this->reproducciones->contains($reproduccione)) {
             $this->reproducciones->add($reproduccione);
@@ -237,7 +270,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    public function removeReproduccione(Reproduccion $reproduccione): static
+    public function removeReproduccion(Reproduccion $reproduccione): static
     {
         if ($this->reproducciones->removeElement($reproduccione)) {
             // set the owning side to null (unless already changed)
@@ -248,4 +281,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
         return $this;
     }
+
+   
 }
