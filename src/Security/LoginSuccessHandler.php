@@ -2,6 +2,7 @@
 
 namespace App\Security;
 
+use App\Entity\User;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Http\Authentication\AuthenticationSuccessHandlerInterface;
@@ -12,6 +13,15 @@ class LoginSuccessHandler implements AuthenticationSuccessHandlerInterface
 {
     public function onAuthenticationSuccess(Request $request, TokenInterface $token): Response
     {
-        return new JsonResponse(['result' => 'success']);
+        $user = $token->getUser();
+
+        if ($user instanceof User) {
+            $data = [
+                'username' => $user->getUsername(),
+                'roles' => $user->getRoles()
+            ];
+        }
+        
+        return new JsonResponse(['result' => 'success', 'user' => $data]);
     }
 }

@@ -27,7 +27,9 @@ security:
             
             logout:
                 path: /api/logout
-                target: /
+                invalidate_session: true
+                target: /api/logout-success
+
 
     access_control:
         - { path: ^/api/login, roles: IS_AUTHENTICATED_ANONYMOUSLY }
