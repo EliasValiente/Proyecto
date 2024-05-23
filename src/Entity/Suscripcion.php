@@ -5,6 +5,7 @@ namespace App\Entity;
 use App\Repository\SuscripcionRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: SuscripcionRepository::class)]
@@ -29,6 +30,12 @@ class Suscripcion
 
     #[ORM\OneToMany(mappedBy: 'suscripcion', targetEntity: User::class)]
     private Collection $users;
+
+    #[ORM\Column]
+    private ?float $precio_mensual = null;
+
+    #[ORM\Column(type: Types::SIMPLE_ARRAY, nullable: true)]
+    private ?array $caracteristicas = null;
 
     public function __construct()
     {
@@ -114,6 +121,30 @@ class Suscripcion
                 $user->setSuscripcion(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getPrecioMensual(): ?float
+    {
+        return $this->precio_mensual;
+    }
+
+    public function setPrecioMensual(float $precio_mensual): static
+    {
+        $this->precio_mensual = $precio_mensual;
+
+        return $this;
+    }
+
+    public function getCaracteristicas(): ?array
+    {
+        return $this->caracteristicas;
+    }
+
+    public function setCaracteristicas(?array $caracteristicas): static
+    {
+        $this->caracteristicas = $caracteristicas;
 
         return $this;
     }
