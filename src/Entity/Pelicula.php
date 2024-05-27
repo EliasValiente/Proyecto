@@ -36,6 +36,12 @@ class Pelicula
     #[ORM\OneToMany(mappedBy: 'pelicula', targetEntity: Reproduccion::class)]
     private Collection $reproduccion;
 
+    #[ORM\Column(nullable: true)]
+    private ?int $carpeta = null;
+
+    #[ORM\Column(length: 255)]
+    private ?string $video = null;
+
     public function __construct()
     {
         $this->reproduccion = new ArrayCollection();
@@ -145,6 +151,30 @@ class Pelicula
                 $reproduccion->setPelicula(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getCarpeta(): ?int
+    {
+        return $this->carpeta;
+    }
+
+    public function setCarpeta(?int $carpeta): static
+    {
+        $this->carpeta = $carpeta;
+
+        return $this;
+    }
+
+    public function getVideo(): ?string
+    {
+        return $this->video;
+    }
+
+    public function setVideo(string $video): static
+    {
+        $this->video = $video;
 
         return $this;
     }
