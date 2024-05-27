@@ -1,17 +1,5 @@
 {% extends '@EasyAdmin/page/content.html.twig' %}
 
-{% block body %}
-    <nav class="custom-navbar">
-        <div class="container-fluid">
-            <ul class="nav navbar-nav navbar-right">
-                <li><a href="{{ path('app_admin_redir') }}" class="custom-button">Cerrar Sesión</a></li>
-            </ul>
-        </div>
-    </nav>
-
-    {{ parent() }}
-{% endblock %}
-
 {% block javascripts %}
     {{ parent() }}
 {% endblock %}

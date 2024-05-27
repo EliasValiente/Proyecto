@@ -1,0 +1,23 @@
+RewriteEngine On
+
+# Establecer el header HTTP_AUTHORIZATION eliminado por Apache
+RewriteCond %{HTTP:Authorization} .
+RewriteRule ^ - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
+
+# Las siguientes reglas son para manejar la reescritura de URLs en Symfony
+# y dirigir todas las solicitudes al controlador frontal index.php
+
+# Determinar automáticamente el RewriteBase y establecerlo como variable de entorno.
+RewriteCond %{REQUEST_URI}::$1 ^(/.+)/(.*)::\2$
+RewriteRule ^(.*) - [E=BASE:%1]
+
+# Redirigir a URI sin el controlador frontal para evitar contenido duplicado
+RewriteCond %{ENV:REDIRECT_STATUS} ^$
+RewriteRule ^index\.php(?:/(.*)|$) %{ENV:BASE}/$1 [R=301,L]
+
+# Si el nombre del archivo solicitado existe, simplemente sírvelo.
+RewriteCond %{REQUEST_FILENAME} -f
+RewriteRule ^ - [L]
+
+# Reescribir todas las demás consultas al controlador frontal.
+RewriteRule ^ %{ENV:BASE}/index.php [L]
