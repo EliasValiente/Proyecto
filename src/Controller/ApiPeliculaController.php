@@ -2,20 +2,26 @@
 
 namespace App\Controller;
 
+use App\Entity\User;
 use App\Repository\PeliculaRepository;
+use App\Repository\ReproduccionRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
 class ApiPeliculaController extends AbstractController
 {
 
     private $peliculaRepository;
+    private $reproduccionRepository;
+    private $security;
 
-    public function __construct(PeliculaRepository $peliculaRepository)
+    public function __construct(PeliculaRepository $peliculaRepository, ReproduccionRepository $reproduccionRepository, Security $security)
     {
         $this->peliculaRepository = $peliculaRepository;
+        $this->reproduccionRepository = $reproduccionRepository;
+        $this->security = $security;
     }
 
     #[Route('/api/movies/popular', name: 'api_popular_movies', methods:['GET'])]
@@ -29,6 +35,19 @@ class ApiPeliculaController extends AbstractController
     public function getRecommendedMovies(): JsonResponse
     {
         $movies = $this->peliculaRepository->findRecommendedMovies();
+        return $this->json($movies);
+    }
+
+    #[Route('/api/movies/watched', name: 'api_watched_movies', methods: ['GET'])]
+    public function getWatchedMovies(): JsonResponse
+    {
+        $user = $this->getUser();
+        
+        if (!$user instanceof User) {
+            return $this->json(['error' => 'User not authenticated'], JsonResponse::HTTP_UNAUTHORIZED);
+        }
+
+        $movies = $this->reproduccionRepository->findWatchedMoviesByUser($user->getId());
         return $this->json($movies);
     }
 

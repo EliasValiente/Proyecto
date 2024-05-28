@@ -43,4 +43,15 @@ class ReproduccionRepository extends ServiceEntityRepository
 
         return $qb->getQuery()->getResult();
     }
+
+    public function findWatchedMoviesByUser($userId): array {
+        $qb = $this->createQueryBuilder('r')
+            ->select('p.id, p.titulo, p.director, p.categoria, p.duracion, p.sinopsis, p.imagen, p.carpeta, p.video')
+            ->leftJoin('r.pelicula', 'p')
+            ->where('r.user = :userId')
+            ->setParameter('userId', $userId)
+            ->groupBy('p.id'); // Agrupa por el id de la entidad Pelicula
+
+        return $qb->getQuery()->getResult();
+    }
 }
