@@ -8,6 +8,7 @@ use App\Repository\ReproduccionRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Attribute\Route;
 
 class ApiPeliculaController extends AbstractController
@@ -48,6 +49,14 @@ class ApiPeliculaController extends AbstractController
         }
 
         $movies = $this->reproduccionRepository->findWatchedMoviesByUser($user->getId());
+        return $this->json($movies);
+    }
+
+    #[Route('/api/movies/title', name: 'api_searched_movies', methods: ['GET'])]
+    public function getSearchedMovies(Request $request): JsonResponse
+    {
+        $title = $request->query->get('title', '');
+        $movies = $this->peliculaRepository->findMoviesByTitle($title);
         return $this->json($movies);
     }
 

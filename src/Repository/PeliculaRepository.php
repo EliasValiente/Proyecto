@@ -47,6 +47,16 @@ class PeliculaRepository extends ServiceEntityRepository
             ->getOneOrNullResult();
     }
 
+    public function findMoviesByTitle(string $title): array
+    {
+        return $this->createQueryBuilder('p')
+            ->select('p.id, p.titulo, p.director, p.categoria, p.duracion, p.sinopsis, p.imagen, p.video')
+            ->where('p.titulo LIKE :titulo')
+            ->setParameter('titulo', '%' . $title . '%')
+            ->getQuery()
+            ->getArrayResult();
+    }
+
     public function findWatchedMovies(int $userId): array
     {
         return $this->createQueryBuilder('p')
