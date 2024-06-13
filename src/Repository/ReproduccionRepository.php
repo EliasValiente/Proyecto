@@ -22,6 +22,7 @@ class ReproduccionRepository extends ServiceEntityRepository
         parent::__construct($registry, Reproduccion::class);
     }
 
+    // Método para encontrar las reproducciones de hoy
     public function findByTodayDate(): array {
         $hoy = date("y/m/d");
 
@@ -35,6 +36,7 @@ class ReproduccionRepository extends ServiceEntityRepository
         return $qb->getQuery()->getResult();
     }
 
+    // Método para encontrar las películas más vistas
     public function findMasVistas(): array {
         $qb = $this->createQueryBuilder('r')
             ->select('p.titulo as tituloPelicula', 'COUNT(r.id) as cantidadReproducciones')
@@ -44,6 +46,7 @@ class ReproduccionRepository extends ServiceEntityRepository
         return $qb->getQuery()->getResult();
     }
 
+    // Método para encontrar las películas vistas por un usuario específico
     public function findWatchedMoviesByUser($userId): array {
         $qb = $this->createQueryBuilder('r')
             ->select('p.id, p.titulo, p.director, p.categoria, p.duracion, p.sinopsis, p.imagen, p.carpeta, p.video')

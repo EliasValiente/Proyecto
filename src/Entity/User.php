@@ -17,68 +17,80 @@ use Symfony\Component\Security\Core\User\UserInterface;
 #[UniqueEntity(fields: ['username'], message: 'There is already an account with this username')]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
+    // Identificador único de la entidad, se genera automáticamente
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private ?int $id = null;
 
+    // Email del usuario, debe ser único
     #[ORM\Column(length: 180, unique: true)]
     private ?string $email = null;
 
+    // Roles del usuario, almacenados como un array
     #[ORM\Column]
     private array $roles = [];
 
-    /**
-     * @var string The hashed password
-     */
+    // Contraseña hasheada del usuario
     #[ORM\Column]
     private ?string $password = null;
 
+    // Nombre del usuario
     #[ORM\Column(length: 50)]
     private ?string $nombre = null;
 
+    // Nombre de usuario, debe ser único
     #[ORM\Column(length: 50)]
     private ?string $username = null;
 
+    // Apellidos del usuario
     #[ORM\Column(length: 75)]
     private ?string $apellidos = null;
 
+    // CVV de la tarjeta del usuario, puede ser nulo
     #[ORM\Column(nullable: true)]
     private ?string $cvv = null;
 
+    // Número de tarjeta del usuario, puede ser nulo
     #[ORM\Column(type: Types::BIGINT, nullable: true)]
     private ?string $tarjeta = null;
     
+    // Fecha de validez de la tarjeta del usuario, puede ser nula
     #[ORM\Column(type: Types::DATE_MUTABLE, nullable: true)]
     private ?\DateTimeInterface $fechaValidez = null;
 
+    // Relación uno-a-muchos con la entidad ListaSeguimiento, con eliminación en cascada
     #[ORM\OneToMany(mappedBy: 'user', targetEntity: ListaSeguimiento::class, orphanRemoval: true)]
     private Collection $listasseguimiento;
 
+    // Relación muchos-a-uno con la entidad Suscripcion
     #[ORM\ManyToOne(inversedBy: 'users')]
     private ?Suscripcion $suscripcion = null;
 
+    // Relación uno-a-muchos con la entidad Reproduccion
     #[ORM\OneToMany(mappedBy: 'user', targetEntity: Reproduccion::class)]
     private Collection $reproducciones;
 
-
-
+    // Constructor para inicializar las colecciones de listas de seguimiento y reproducciones
     public function __construct()
     {
         $this->listasseguimiento = new ArrayCollection();
         $this->reproducciones = new ArrayCollection();
     }
 
+    // Obtener el ID del usuario
     public function getId(): ?int
     {
         return $this->id;
     }
 
+    // Obtener el email del usuario
     public function getEmail(): ?string
     {
         return $this->email;
     }
 
+    // Establecer el email del usuario
     public function setEmail(string $email): static
     {
         $this->email = $email;
@@ -87,7 +99,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     }
 
     /**
-     * A visual identifier that represents this user.
+     * Un identificador visual que representa a este usuario.
      *
      * @see UserInterface
      */
@@ -102,9 +114,8 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function getRoles(): array
     {
         $roles = $this->roles;
-        // guarantee every user at least has ROLE_USER
+        // Garantizar que cada usuario tenga al menos ROLE_USER
         $roles[] = 'ROLE_USER';
-
 
         return array_unique($roles);
     }
@@ -136,7 +147,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      */
     public function eraseCredentials(): void
     {
-        // If you store any temporary, sensitive data on the user, clear it here
+        // Si almacenas datos sensibles temporales en el usuario, límpialos aquí
         // $this->plainPassword = null;
     }
 
@@ -233,7 +244,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function removeListasseguimiento(ListaSeguimiento $listasseguimiento): static
     {
         if ($this->listasseguimiento->removeElement($listasseguimiento)) {
-            // set the owning side to null (unless already changed)
+            // Establecer el lado propietario a null, a menos que ya esté cambiado
             if ($listasseguimiento->getUser() === $this) {
                 $listasseguimiento->setUser(null);
             }
@@ -275,7 +286,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function removeReproduccion(Reproduccion $reproduccione): static
     {
         if ($this->reproducciones->removeElement($reproduccione)) {
-            // set the owning side to null (unless already changed)
+            // Establecer el lado propietario a null, a menos que ya esté cambiado
             if ($reproduccione->getUser() === $this) {
                 $reproduccione->setUser(null);
             }
@@ -283,5 +294,4 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
         return $this;
     }
-   
 }
